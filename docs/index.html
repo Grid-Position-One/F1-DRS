@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>F1-DRS | F1 Paddock Tool</title>
+<meta name="description" content="F1-DRS — 2026赛季F1围场信息工具，涵盖车队车手资料、轮胎系统、赛道日历、赛事规则及互动游戏">
+<meta name="keywords" content="F1, Formula 1, 2026赛季, 车队, 车手, 赛道, 轮胎, 排位赛, 围场">
+<meta property="og:title" content="F1-DRS | F1 Paddock Tool">
+<meta property="og:description" content="2026 FIA Formula One World Championship — 全新纪元">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_CN">
 <style>
 :root {
   --bg: #0a0e14;
@@ -80,6 +86,23 @@ body::before {
 
 .sidebar-logo .logo-icon-mobile {
   display: none;
+}
+.sidebar-toggle {
+  display: none;
+  margin-left: auto;
+  background: rgba(0,229,255,.1);
+  border: 1px solid rgba(0,229,255,.25);
+  color: var(--accent);
+  border-radius: 8px;
+  width: 32px; height: 32px;
+  font-size: 16px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+@media (max-width: 768px) {
+  .sidebar-toggle { display: flex; }
 }
 
 .sidebar-nav {
@@ -616,6 +639,17 @@ body::before {
   .main { margin-left: 60px; padding: 16px; max-width: calc(100vw - 60px); }
   .card-grid, .tire-grid, .champ-grid { grid-template-columns: 1fr; }
   .game-container { padding: 20px 16px; }
+
+  /* 移动端展开态 */
+  .sidebar.expanded { width: 240px; z-index: 200; box-shadow: 4px 0 24px rgba(0,0,0,.5); }
+  .sidebar.expanded .nav-item span,
+  .sidebar.expanded .nav-section,
+  .sidebar.expanded .nav-badge { display: inline; }
+  .sidebar.expanded .sidebar-logo { justify-content: flex-start; padding: 24px 20px; }
+  .sidebar.expanded .sidebar-logo .logo-svg { display: block; }
+  .sidebar.expanded .sidebar-logo .logo-icon-mobile { display: none; }
+  .sidebar.expanded .nav-item { justify-content: flex-start; padding: 10px 16px 10px 20px; }
+  .sidebar.expanded ~ .main { margin-left: 240px; max-width: calc(100vw - 240px); }
 }
 
 /* Animations */
@@ -2385,13 +2419,18 @@ body::before {
 </style>
 </head>
 <body>
+<noscript>
+  <p style="color:#fff;text-align:center;padding:40px;font-size:16px;">
+    F1-DRS 需要启用 JavaScript 才能正常运行。请开启 JavaScript 后刷新页面。
+  </p>
+</noscript>
 
 <!-- Background Ambiance -->
 <div class="bg-orb bg-orb-1"></div>
 <div class="bg-orb bg-orb-2"></div>
 
 <!-- ===== SIDEBAR ===== -->
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <svg class="logo-svg" viewBox="0 0 170 44" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -2420,8 +2459,9 @@ body::before {
       <text x="100" y="32" font-family="'Segoe UI','Microsoft YaHei',sans-serif" font-size="7" fill="#555" font-weight="600" letter-spacing="4">PADDOCK TOOL</text>
     </svg>
     <div class="logo-icon-mobile">DRS</div>
+    <button class="sidebar-toggle" aria-label="展开/收起导航菜单" aria-expanded="false" aria-controls="sidebar" onclick="toggleSidebar()">☰</button>
   </div>
-  <nav class="sidebar-nav">
+  <nav class="sidebar-nav" role="navigation" aria-label="主导航">
     <div class="nav-section">概览</div>
     <div class="nav-item active" data-page="dashboard">
       <span class="nav-icon">🏠</span><span>仪表盘</span>
@@ -2549,7 +2589,7 @@ body::before {
         <div class="stat-label">正式车手</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">24</div>
+        <div class="stat-value">22</div>
         <div class="stat-label">分站赛</div>
       </div>
       <div class="stat-card">
@@ -2627,7 +2667,7 @@ body::before {
   <!-- CIRCUITS -->
   <div class="page" id="page-circuits">
     <h2 class="page-title">2026 赛季赛道日历</h2>
-    <p class="page-subtitle">6/24 站已完成 — 最新: 摩纳哥 GP（Antonelli 五连胜）</p>
+    <p class="page-subtitle">6/22 站已完成 — 最新: 摩纳哥 GP（Antonelli 五连胜）</p>
     <table class="info-table" id="circuits-table"></table>
   </div>
 
@@ -2692,7 +2732,7 @@ body::before {
   </div>
 
   <!-- REACTION TEST -->
-  <div class="page" id="page-reaction">
+  <div class="page" id="page-reaction" role="region" aria-label="互动游戏：reaction">
     <h2 class="page-title">起步反应测试</h2>
     <p class="page-subtitle">模拟 F1 发车灯灭起步 — 测试你的反应速度</p>
 
@@ -2719,21 +2759,21 @@ body::before {
 
 
   <!-- QUIZ -->
-  <div class="page" id="page-quiz">
+  <div class="page" id="page-quiz" role="region" aria-label="互动游戏：quiz">
     <h2 class="page-title">F1 知识问答</h2>
     <p class="page-subtitle">测试你的 F1 知识 — 10 道选择题 · 满分 100</p>
     <div class="game-container" id="quiz-container"></div>
   </div>
 
   <!-- PIT STOP -->
-  <div class="page" id="page-pitstop">
+  <div class="page" id="page-pitstop" role="region" aria-label="互动游戏：pitstop">
     <h2 class="page-title">进站换胎挑战</h2>
     <p class="page-subtitle">模拟 F1 换胎流程 — 比拼你的手速</p>
     <div class="game-container" id="pitstop-container"></div>
   </div>
 
   <!-- DRIVER SORT -->
-  <div class="page" id="page-driversort">
+  <div class="page" id="page-driversort" role="region" aria-label="互动游戏：driversort">
     <h2 class="page-title">车手乱序挑战</h2>
     <p class="page-subtitle">从 5 位车手中按 2025 赛季积分排名排序 — 限时 15 秒</p>
     <div class="game-container" id="driversort-container"></div>
@@ -2741,7 +2781,7 @@ body::before {
 
 
   <!-- TRACK DETAIL MODAL -->
-  <div class="modal-overlay" id="track-modal" onclick="if(event.target===this)closeTrackModal()">
+  <div class="modal-overlay" id="track-modal" role="dialog" aria-modal="true" aria-labelledby="track-modal-title" onclick="if(event.target===this)closeTrackModal()">
     <div class="modal-dialog" id="track-modal-content"></div>
   </div>
 
@@ -2771,14 +2811,14 @@ body::before {
   </div>
 
   <!-- QUALI SIM -->
-  <div class="page" id="page-quali-sim">
+  <div class="page" id="page-quali-sim" role="region" aria-label="互动游戏：quali-sim">
     <h2 class="page-title">排位赛模拟</h2>
     <p class="page-subtitle">模拟飞驰圈 — 在最佳时机点击停止光标</p>
     <div class="quali-container" id="quali-container"></div>
   </div>
 
   <!-- TRACK MEMORY -->
-  <div class="page" id="page-track-memory">
+  <div class="page" id="page-track-memory" role="region" aria-label="互动游戏：track-memory">
     <h2 class="page-title">赛道记忆翻牌</h2>
     <p class="page-subtitle">匹配赛道与对应国家 — 6 对 · 12 张牌</p>
     <div class="game-container" id="memory-container">
@@ -3169,30 +3209,30 @@ function renderTires() {
 
 // ===== RENDER CIRCUITS =====
 const circuits = [
-  ['1','澳大利亚大奖赛','Albert Park','墨尔本','3月6-8日'],
-  ['2','中国大奖赛','Shanghai International Circuit','上海','3月13-15日 (冲刺赛)'],
-  ['3','日本大奖赛','Suzuka Circuit','铃鹿','3月27-29日'],
-  ['—','巴林大奖赛','Bahrain International Circuit','萨基尔','4月10-12日 ❌取消'],
-  ['—','沙特阿拉伯大奖赛','Jeddah Corniche Circuit','吉达','4月17-19日 ❌取消'],
-  ['4','迈阿密大奖赛','Miami International Autodrome','迈阿密','5月1-3日 (冲刺赛)'],
-  ['5','加拿大大奖赛','Circuit Gilles Villeneuve','蒙特利尔','5月22-24日'],
-  ['6','摩纳哥大奖赛','Circuit de Monaco','蒙特卡洛','6月5-7日'],
-  ['7','巴塞罗那-加泰罗尼亚大奖赛','Circuit de Barcelona-Catalunya','巴塞罗那','6月12-14日'],
-  ['8','奥地利大奖赛','Red Bull Ring','斯皮尔伯格','6月26-28日'],
-  ['9','英国大奖赛','Silverstone Circuit','银石','7月3-5日 (冲刺赛)'],
-  ['10','比利时大奖赛','Circuit de Spa-Francorchamps','斯帕','7月17-19日'],
-  ['11','匈牙利大奖赛','Hungaroring','布达佩斯','7月24-26日'],
-  ['12','荷兰大奖赛','Circuit Zandvoort','赞德沃特','8月21-23日 (冲刺赛)'],
-  ['13','意大利大奖赛','Autodromo Nazionale Monza','蒙扎','9月4-6日'],
-  ['14','西班牙大奖赛','Madrid Street Circuit 🆕','马德里','9月11-13日'],
-  ['15','阿塞拜疆大奖赛','Baku City Circuit','巴库','9月24-26日'],
-  ['16','新加坡大奖赛','Marina Bay Street Circuit','新加坡','10月9-11日 (冲刺赛)'],
-  ['17','美国大奖赛','Circuit of the Americas','奥斯汀','10月23-25日'],
-  ['18','墨西哥城大奖赛','Autódromo Hermanos Rodríguez','墨西哥城','10月30日-11月1日'],
-  ['19','圣保罗大奖赛','Autódromo José Carlos Pace','圣保罗','11月6-8日'],
-  ['20','拉斯维加斯大奖赛','Las Vegas Strip Circuit','拉斯维加斯','11月19-21日'],
-  ['21','卡塔尔大奖赛','Lusail International Circuit','卢赛尔','11月27-29日'],
-  ['22','阿布扎比大奖赛','Yas Marina Circuit','阿布扎比','12月4-6日']
+  { no:'1', gp:'澳大利亚大奖赛', circuit:'Albert Park', city:'墨尔本', date:'3月6-8日', trackDetailId:1 },
+  { no:'2', gp:'中国大奖赛', circuit:'Shanghai International Circuit', city:'上海', date:'3月13-15日 (冲刺赛)', trackDetailId:2 },
+  { no:'3', gp:'日本大奖赛', circuit:'Suzuka Circuit', city:'铃鹿', date:'3月27-29日', trackDetailId:3 },
+  { no:'—', gp:'巴林大奖赛', circuit:'Bahrain International Circuit', city:'萨基尔', date:'4月10-12日 ❌取消', trackDetailId:4 },
+  { no:'—', gp:'沙特阿拉伯大奖赛', circuit:'Jeddah Corniche Circuit', city:'吉达', date:'4月17-19日 ❌取消', trackDetailId:5 },
+  { no:'4', gp:'迈阿密大奖赛', circuit:'Miami International Autodrome', city:'迈阿密', date:'5月1-3日 (冲刺赛)', trackDetailId:6 },
+  { no:'5', gp:'加拿大大奖赛', circuit:'Circuit Gilles Villeneuve', city:'蒙特利尔', date:'5月22-24日', trackDetailId:10 },
+  { no:'6', gp:'摩纳哥大奖赛', circuit:'Circuit de Monaco', city:'蒙特卡洛', date:'6月5-7日', trackDetailId:8 },
+  { no:'7', gp:'巴塞罗那-加泰罗尼亚大奖赛', circuit:'Circuit de Barcelona-Catalunya', city:'巴塞罗那', date:'6月12-14日', trackDetailId:9 },
+  { no:'8', gp:'奥地利大奖赛', circuit:'Red Bull Ring', city:'斯皮尔伯格', date:'6月26-28日', trackDetailId:11 },
+  { no:'9', gp:'英国大奖赛', circuit:'Silverstone Circuit', city:'银石', date:'7月3-5日 (冲刺赛)', trackDetailId:12 },
+  { no:'10', gp:'比利时大奖赛', circuit:'Circuit de Spa-Francorchamps', city:'斯帕', date:'7月17-19日', trackDetailId:13 },
+  { no:'11', gp:'匈牙利大奖赛', circuit:'Hungaroring', city:'布达佩斯', date:'7月24-26日', trackDetailId:14 },
+  { no:'12', gp:'荷兰大奖赛', circuit:'Circuit Zandvoort', city:'赞德沃特', date:'8月21-23日 (冲刺赛)', trackDetailId:15 },
+  { no:'13', gp:'意大利大奖赛', circuit:'Autodromo Nazionale Monza', city:'蒙扎', date:'9月4-6日', trackDetailId:16 },
+  { no:'14', gp:'西班牙大奖赛', circuit:'Madrid Street Circuit 🆕', city:'马德里', date:'9月11-13日', trackDetailId:0 },
+  { no:'15', gp:'阿塞拜疆大奖赛', circuit:'Baku City Circuit', city:'巴库', date:'9月24-26日', trackDetailId:17 },
+  { no:'16', gp:'新加坡大奖赛', circuit:'Marina Bay Street Circuit', city:'新加坡', date:'10月9-11日 (冲刺赛)', trackDetailId:18 },
+  { no:'17', gp:'美国大奖赛', circuit:'Circuit of the Americas', city:'奥斯汀', date:'10月23-25日', trackDetailId:19 },
+  { no:'18', gp:'墨西哥城大奖赛', circuit:'Autódromo Hermanos Rodríguez', city:'墨西哥城', date:'10月30日-11月1日', trackDetailId:20 },
+  { no:'19', gp:'圣保罗大奖赛', circuit:'Autódromo José Carlos Pace', city:'圣保罗', date:'11月6-8日', trackDetailId:21 },
+  { no:'20', gp:'拉斯维加斯大奖赛', circuit:'Las Vegas Strip Circuit', city:'拉斯维加斯', date:'11月19-21日', trackDetailId:22 },
+  { no:'21', gp:'卡塔尔大奖赛', circuit:'Lusail International Circuit', city:'卢赛尔', date:'11月27-29日', trackDetailId:23 },
+  { no:'22', gp:'阿布扎比大奖赛', circuit:'Yas Marina Circuit', city:'阿布扎比', date:'12月4-6日', trackDetailId:24 }
 ];
 
 function renderCircuits() {
@@ -3200,7 +3240,7 @@ function renderCircuits() {
   table.innerHTML = `
     <thead><tr><th>#</th><th>大奖赛</th><th>赛道</th><th>地点</th><th>日期</th></tr></thead>
     <tbody>
-      ${circuits.map(c => `<tr><td>${c[0]}</td><td>${c[1]}</td><td>${c[2]}</td><td>${c[3]}</td><td>${c[4]}</td></tr>`).join('')}
+      ${circuits.map(c => `<tr data-track-id="${c.trackDetailId}"><td>${c.no}</td><td>${c.gp}</td><td>${c.circuit}</td><td>${c.city}</td><td>${c.date}</td></tr>`).join('')}
     </tbody>`;
 }
 
@@ -3276,6 +3316,14 @@ function startReactionTest() {
           evalEl.textContent = evalText;
           evalEl.style.color = evalColor;
 
+          // Save best reaction to records
+          const rRec = loadRecords().reaction || {};
+          if (!rRec.best || reactionTime < rRec.best) {
+            saveRecord('reaction', { best: reactionTime, last: reactionTime });
+          } else {
+            saveRecord('reaction', { last: reactionTime });
+          }
+
           // Save to history
           reactionHistory.unshift({ time: reactionTime, eval: evalText, date: new Date().toLocaleTimeString() });
           if (reactionHistory.length > 20) reactionHistory.pop();
@@ -3305,6 +3353,27 @@ function renderHistory() {
     html += `<div class="history-row"><span>${r.date}</span><span class="history-time">${r.time} ms</span><span class="history-eval">${r.eval}</span></div>`;
   });
   container.innerHTML = html;
+}
+
+// ===== SIDEBAR TOGGLE (mobile) =====
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  if (!sb) return;
+  const expanded = sb.classList.toggle('expanded');
+  const btn = sb.querySelector('.sidebar-toggle');
+  if (btn) btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+}
+
+// ===== GAME RECORDS (localStorage) =====
+const F1DRS_RECORDS_KEY = 'f1drs_records';
+function loadRecords() {
+  try { return JSON.parse(localStorage.getItem(F1DRS_RECORDS_KEY)) || {}; }
+  catch (e) { return {}; }
+}
+function saveRecord(game, data) {
+  const rec = loadRecords();
+  rec[game] = Object.assign({}, rec[game], data);
+  localStorage.setItem(F1DRS_RECORDS_KEY, JSON.stringify(rec));
 }
 
 // ===== INIT =====
@@ -3382,6 +3451,7 @@ function handleQuizAnswer(btn, picked) {
 
 function renderQuizResult() {
   const c = document.getElementById('quiz-container');
+  saveRecord('quiz', { lastScore: quizScore, bestScore: Math.max(quizScore, (loadRecords().quiz || {}).bestScore || 0) });
   let evalText = '';
   if (quizScore >= 90) evalText = '围场专家';
   else if (quizScore >= 70) evalText = '资深车迷';
@@ -3478,6 +3548,7 @@ function finishPitstop() {
     pitstopBest = elapsed;
     localStorage.setItem('pitstop_best', pitstopBest.toString());
   }
+  saveRecord('pitstop', { last: elapsed, best: pitstopBest });
 
   const dhlRecord = 1.80;
   const diff = elapsed - dhlRecord;
@@ -3562,6 +3633,7 @@ function startDsTimer() {
 function endDriverSort(timeout) {
   dsortActive = false;
   clearInterval(dsortTimer);
+  saveRecord('driversort', { lastScore: dsortScore, bestScore: Math.max(dsortScore, (loadRecords().driversort || {}).bestScore || 0) });
   renderDriverSortResult(timeout);
 }
 
@@ -3652,7 +3724,7 @@ function renderDriverSortResult(timeout) {
 
 
 // ============================================================
-//  TRACK DETAIL MODAL (24 tracks data)
+//  TRACK DETAIL MODAL (22 tracks data)
 // ============================================================
 const trackDetails = [
   { id:1, gp:"澳大利亚大奖赛", circuit:"Albert Park", country:"澳大利亚", city:"墨尔本",
@@ -3790,11 +3862,13 @@ function closeTrackModal() {
     _renderCircuits();
     const table = document.getElementById('circuits-table');
     const rows = table.querySelectorAll('tbody tr');
-    rows.forEach((row, i) => {
+    rows.forEach((row) => {
       row.classList.add('circuit-row-click');
-      const trackId = i + 1;
-      row.addEventListener('click', () => openTrackModal(trackId));
-      row.title = '点击查看赛道详情';
+      const trackId = parseInt(row.dataset.trackId, 10);
+      if (trackId > 0) {
+        row.addEventListener('click', () => openTrackModal(trackId));
+        row.title = '点击查看赛道详情';
+      }
     });
   };
 })();
@@ -3804,13 +3878,13 @@ function closeTrackModal() {
 // ============================================================
 const compareDrivers = [
   { name:"Max Verstappen", nat:"荷兰", age:28, num:1, team:"Red Bull Racing", teammate:"Isack Hadjar", races:224, wins:63, poles:40, best:"世界冠军×4", rank2025:"第2" },
-  { name:"Isack Hadjar", nat:"法国", age:21, num:12, team:"Red Bull Racing", teammate:"Max Verstappen", races:9, wins:0, poles:0, best:"新秀", rank2025:"F2冠军" },
+  { name:"Isack Hadjar", nat:"法国", age:21, num:6, team:"Red Bull Racing", teammate:"Max Verstappen", races:9, wins:0, poles:0, best:"新秀", rank2025:"F2冠军" },
   { name:"Lando Norris", nat:"英国", age:26, num:4, team:"McLaren", teammate:"Oscar Piastri", races:148, wins:5, poles:9, best:"第2名", rank2025:"第1（世界冠军）" },
   { name:"Oscar Piastri", nat:"澳大利亚", age:25, num:81, team:"McLaren", teammate:"Lando Norris", races:72, wins:3, poles:2, best:"第2名", rank2025:"第3" },
   { name:"Charles Leclerc", nat:"摩纳哥", age:28, num:16, team:"Ferrari", teammate:"Lewis Hamilton", races:170, wins:9, poles:26, best:"第2名", rank2025:"第4" },
   { name:"Lewis Hamilton", nat:"英国", age:41, num:44, team:"Ferrari", teammate:"Charles Leclerc", races:362, wins:105, poles:104, best:"世界冠军×7", rank2025:"第6" },
   { name:"George Russell", nat:"英国", age:28, num:63, team:"Mercedes", teammate:"Kimi Antonelli", races:148, wins:3, poles:3, best:"第4名", rank2025:"第5" },
-  { name:"Kimi Antonelli", nat:"意大利", age:19, num:12, team:"Mercedes", teammate:"George Russell", races:9, wins:0, poles:0, best:"新秀", rank2025:"F2" },
+  { name:"Kimi Antonelli", nat:"意大利", age:19, num:12, team:"Mercedes", teammate:"George Russell", races:9, wins:5, poles:0, best:"新秀", rank2025:"F2" },
   { name:"Fernando Alonso", nat:"西班牙", age:44, num:14, team:"Aston Martin", teammate:"Lance Stroll", races:406, wins:32, poles:22, best:"世界冠军×2", rank2025:"第8" },
   { name:"Lance Stroll", nat:"加拿大", age:27, num:18, team:"Aston Martin", teammate:"Fernando Alonso", races:172, wins:0, poles:0, best:"第3名", rank2025:"第14" },
   { name:"Pierre Gasly", nat:"法国", age:30, num:10, team:"Alpine", teammate:"Franco Colapinto", races:164, wins:1, poles:0, best:"第1名", rank2025:"第9" },
@@ -3823,8 +3897,7 @@ const compareDrivers = [
   { name:"Oliver Bearman", nat:"英国", age:21, num:87, team:"Toyota GR Haas", teammate:"Esteban Ocon", races:9, wins:0, poles:0, best:"新秀", rank2025:"F2第5" },
   { name:"Sergio Perez", nat:"墨西哥", age:36, num:11, team:"Cadillac Racing", teammate:"Valtteri Bottas", races:281, wins:6, poles:3, best:"第2名", rank2025:"第16" },
   { name:"Valtteri Bottas", nat:"芬兰", age:36, num:77, team:"Cadillac Racing", teammate:"Sergio Perez", races:247, wins:10, poles:20, best:"第2名", rank2025:"第18" },
-  { name:"Yuki Tsunoda", nat:"日本", age:26, num:22, team:"Racing Bulls", teammate:"Liam Lawson", races:87, wins:0, poles:0, best:"第4名", rank2025:"第13" },
-  { name:"Liam Lawson", nat:"新西兰", age:24, num:30, team:"Racing Bulls", teammate:"Yuki Tsunoda", races:31, wins:0, poles:0, best:"第9名", rank2025:"第10" }
+  { name:"Liam Lawson", nat:"新西兰", age:24, num:30, team:"Racing Bulls", teammate:"Arvid Lindblad", races:31, wins:0, poles:0, best:"第9名", rank2025:"第10" }
 ];
 
 function populateCompareSelects() {
@@ -4103,6 +4176,8 @@ function advanceQualiSector() {
 function finishQualiSim() {
   qualiState = 'finished';
   const total = qualiSectorTimes[0] + qualiSectorTimes[1] + qualiSectorTimes[2];
+  const qualiRec = loadRecords().quali || {};
+  saveRecord('quali', { lastTotal: total, bestTotal: Math.min(total, qualiRec.bestTotal || Infinity) });
   let evalText = '', evalColor = '';
   if (total < 80) { evalText = '杆位!'; evalColor = 'var(--purple)'; }
   else if (total < 83) { evalText = '前排发车!'; evalColor = 'var(--accent)'; }
@@ -4248,6 +4323,10 @@ function flipMemCard(idx) {
 function finishMemoryGame() {
   clearInterval(memTimer);
   const elapsed = Math.floor((Date.now() - memStartTime) / 1000);
+  const memRec = loadRecords().memory || {};
+  const bestMoves = Math.min(memMoves, memRec.bestMoves || Infinity);
+  const bestTime = Math.min(elapsed, memRec.bestTime || Infinity);
+  saveRecord('memory', { lastMoves: memMoves, lastTime: elapsed, bestMoves: bestMoves, bestTime: bestTime });
   const grid = document.getElementById('memory-grid');
   grid.insertAdjacentHTML('afterend', `
     <div class="memory-complete" style="margin-top:24px;">
@@ -5433,122 +5512,122 @@ const trackDetailData = [
   { id:"albert-park", name:"Albert Park", gp:"澳大利亚大奖赛", country:"🇦🇺 澳大利亚", firstRace:1996,
     laps:58, length:"5.278 km", dist:"306.124 km", corners:14, drs:4,
     record:{driver:"Leclerc", time:"1:19.813", year:2024},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Australia_Circuit" alt="Australia Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Australia_Circuit" alt="Australia Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"shanghai", name:"上海国际赛车场", gp:"中国大奖赛", country:"🇨🇳 中国", firstRace:2004,
     laps:56, length:"5.451 km", dist:"305.256 km", corners:16, drs:3,
     record:{driver:"Schumacher", time:"1:32.238", year:2004},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/China_Circuit" alt="China Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/China_Circuit" alt="China Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"suzuka", name:"铃鹿", gp:"日本大奖赛", country:"🇯🇵 日本", firstRace:1987,
     laps:53, length:"5.807 km", dist:"307.771 km", corners:18, drs:2,
     record:{driver:"Hamilton", time:"1:30.983", year:2019},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Japan_Circuit" alt="Japan Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Japan_Circuit" alt="Japan Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"bahrain", name:"Bahrain International Circuit", gp:"巴林大奖赛", country:"🇧🇭 巴林", firstRace:2004,
     laps:57, length:"5.412 km", dist:"308.484 km", corners:15, drs:3,
     record:{driver:"De la Rosa", time:"1:31.447", year:2005},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Bahrain_Circuit" alt="Bahrain Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Bahrain_Circuit" alt="Bahrain Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"jeddah", name:"Jeddah Corniche Circuit", gp:"沙特阿拉伯大奖赛", country:"🇸🇦 沙特阿拉伯", firstRace:2021,
     laps:50, length:"6.174 km", dist:"308.700 km", corners:27, drs:3,
     record:{driver:"Hamilton", time:"1:30.734", year:2021},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Saudi_Arabia_Circuit" alt="Saudi_Arabia Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Saudi_Arabia_Circuit" alt="Saudi_Arabia Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"miami", name:"Miami International Autodrome", gp:"迈阿密大奖赛", country:"🇺🇸 美国", firstRace:2022,
     laps:57, length:"5.412 km", dist:"308.326 km", corners:19, drs:3,
     record:{driver:"Verstappen", time:"1:29.708", year:2023},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Miami_Circuit" alt="Miami Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Miami_Circuit" alt="Miami Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"montreal", name:"Circuit Gilles Villeneuve", gp:"加拿大大奖赛", country:"🇨🇦 加拿大", firstRace:1978,
     laps:68, length:"4.361 km", dist:"296.548 km", corners:14, drs:3,
     record:{driver:"Bottas", time:"1:13.078", year:2019},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Canada_Circuit" alt="Canada Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Canada_Circuit" alt="Canada Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"monaco", name:"Circuit de Monaco", gp:"摩纳哥大奖赛", country:"🇲🇨 摩纳哥", firstRace:1950,
     laps:78, length:"3.337 km", dist:"260.286 km", corners:19, drs:1,
     record:{driver:"Hamilton", time:"1:12.909", year:2021},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Monaco_Circuit" alt="Monaco Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Monaco_Circuit" alt="Monaco Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"barcelona", name:"Circuit de Barcelona-Catalunya", gp:"西班牙大奖赛(巴塞罗那)", country:"🇪🇸 西班牙", firstRace:1991,
     laps:66, length:"4.657 km", dist:"307.362 km", corners:16, drs:2,
     record:{driver:"Verstappen", time:"1:16.330", year:2023},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Spain_Circuit" alt="Spain Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Spain_Circuit" alt="Spain Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"red-bull-ring", name:"Red Bull Ring", gp:"奥地利大奖赛", country:"🇦🇹 奥地利", firstRace:1970,
     laps:71, length:"4.318 km", dist:"306.578 km", corners:10, drs:3,
     record:{driver:"Sainz", time:"1:05.619", year:2020},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Austria_Circuit" alt="Austria Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Austria_Circuit" alt="Austria Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"silverstone", name:"Silverstone", gp:"英国大奖赛", country:"🇬🇧 英国", firstRace:1950,
     laps:52, length:"5.891 km", dist:"306.332 km", corners:18, drs:2,
     record:{driver:"Hamilton", time:"1:27.097", year:2020},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Great_Britain_Circuit" alt="Great_Britain Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Great_Britain_Circuit" alt="Great_Britain Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"spa", name:"Spa-Francorchamps", gp:"比利时大奖赛", country:"🇧🇪 比利时", firstRace:1950,
     laps:44, length:"7.004 km", dist:"308.176 km", corners:19, drs:2,
     record:{driver:"Bottas", time:"1:46.286", year:2018},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Belgium_Circuit" alt="Belgium Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Belgium_Circuit" alt="Belgium Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"hungaroring", name:"Hungaroring", gp:"匈牙利大奖赛", country:"🇭🇺 匈牙利", firstRace:1986,
     laps:70, length:"4.381 km", dist:"306.670 km", corners:14, drs:2,
     record:{driver:"Hamilton", time:"1:16.627", year:2020},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Hungary_Circuit" alt="Hungary Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Hungary_Circuit" alt="Hungary Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"zandvoort", name:"Zandvoort", gp:"荷兰大奖赛", country:"🇳🇱 荷兰", firstRace:1952,
     laps:72, length:"4.259 km", dist:"306.648 km", corners:14, drs:2,
     record:{driver:"Hamilton", time:"1:11.097", year:2021},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Netherlands_Circuit" alt="Netherlands Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Netherlands_Circuit" alt="Netherlands Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"monza", name:"Monza", gp:"意大利大奖赛", country:"🇮🇹 意大利", firstRace:1950,
     laps:53, length:"5.793 km", dist:"307.029 km", corners:11, drs:2,
     record:{driver:"Barrichello", time:"1:21.046", year:2004},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Italy_Circuit" alt="Italy Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Italy_Circuit" alt="Italy Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"madrid", name:"Madrid Street Circuit", gp:"马德里大奖赛", country:"🇪🇸 西班牙", firstRace:2026,
     laps:65, length:"5.474 km", dist:"355.810 km", corners:20, drs:2,
     record:{driver:"—", time:"—", year:"2026 新赛道"},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Madrid_Circuit" alt="Madrid Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Madrid_Circuit" alt="Madrid Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"baku", name:"Baku City Circuit", gp:"阿塞拜疆大奖赛", country:"🇦🇿 阿塞拜疆", firstRace:2016,
     laps:51, length:"6.003 km", dist:"306.153 km", corners:20, drs:2,
     record:{driver:"Leclerc", time:"1:43.009", year:2019},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Azerbaijan_Circuit" alt="Azerbaijan Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Azerbaijan_Circuit" alt="Azerbaijan Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"singapore", name:"Marina Bay", gp:"新加坡大奖赛", country:"🇸🇬 新加坡", firstRace:2008,
     laps:61, length:"5.063 km", dist:"308.843 km", corners:23, drs:3,
     record:{driver:"Hamilton", time:"1:36.015", year:2018},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Singapore_Circuit" alt="Singapore Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Singapore_Circuit" alt="Singapore Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"cota", name:"COTA", gp:"美国大奖赛(奥斯汀)", country:"🇺🇸 美国", firstRace:2012,
     laps:56, length:"5.513 km", dist:"308.728 km", corners:20, drs:2,
     record:{driver:"Leclerc", time:"1:36.169", year:2019},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/USA_Circuit" alt="USA Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/USA_Circuit" alt="USA Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"mexico", name:"Autodromo Hermanos Rodriguez", gp:"墨西哥大奖赛", country:"🇲🇽 墨西哥", firstRace:1963,
     laps:71, length:"4.304 km", dist:"305.584 km", corners:17, drs:3,
     record:{driver:"Bottas", time:"1:17.774", year:2021},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Mexico_Circuit" alt="Mexico Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Mexico_Circuit" alt="Mexico Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"interlagos", name:"Interlagos", gp:"巴西大奖赛", country:"🇧🇷 巴西", firstRace:1973,
     laps:71, length:"4.309 km", dist:"305.939 km", corners:15, drs:2,
     record:{driver:"Bottas", time:"1:10.540", year:2018},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Brazil_Circuit" alt="Brazil Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Brazil_Circuit" alt="Brazil Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"las-vegas", name:"Las Vegas Strip Circuit", gp:"拉斯维加斯大奖赛", country:"🇺🇸 美国", firstRace:2023,
     laps:50, length:"6.201 km", dist:"310.050 km", corners:17, drs:2,
     record:{driver:"Piastri", time:"1:34.876", year:2024},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Las_Vegas_Circuit" alt="Las_Vegas Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Las_Vegas_Circuit" alt="Las_Vegas Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"lusail", name:"Lusail International Circuit", gp:"卡塔尔大奖赛", country:"🇶🇦 卡塔尔", firstRace:2021,
     laps:57, length:"5.419 km", dist:"308.883 km", corners:16, drs:2,
     record:{driver:"Verstappen", time:"1:24.319", year:2023},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Qatar_Circuit" alt="Qatar Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Qatar_Circuit" alt="Qatar Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   },
   { id:"yas-marina", name:"Yas Marina", gp:"阿布扎比大奖赛", country:"🇦🇪 阿联酋", firstRace:2009,
     laps:58, length:"5.281 km", dist:"306.298 km", corners:21, drs:2,
     record:{driver:"Verstappen", time:"1:26.103", year:2021},
-    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Abu_Dhabi_Circuit" alt="Abu_Dhabi Circuit Map" loading="lazy">'
+    layout:'<img src="https://media.formula1.com/image/upload/f_auto,c_limit,q_auto,w_1320/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/Abu_Dhabi_Circuit" alt="Abu_Dhabi Circuit Map" loading="lazy" onerror=\"this.style.display=\'none\'\">'
   }
 ];
 
@@ -5710,7 +5789,7 @@ function renderCarIntro() {
 //  DRIVER PROFILES PAGE
 // ============================================================
 const driverData = [
-  { name:"Kimi Antonelli", team:"Mercedes", nationality:"Italy", flag:"🇮🇹", number:"12", dob:"2006-08-25", age:19, races:9, wins:3, podiums:5, poles:1, fastestLaps:3, championships:0, bio:"2026赛季F1新人王，梅赛德斯青训出品。首秀即夺冠，以惊人的速度和成熟的比赛智商震惊围场，被视作未来十年最有潜力的车手。" },
+  { name:"Kimi Antonelli", team:"Mercedes", nationality:"Italy", flag:"🇮🇹", number:"12", dob:"2006-08-25", age:19, races:9, wins:5, podiums:5, poles:1, fastestLaps:3, championships:0, bio:"2026赛季F1新人王，梅赛德斯青训出品。首秀即夺冠，以惊人的速度和成熟的比赛智商震惊围场，被视作未来十年最有潜力的车手。" },
   { name:"George Russell", team:"Mercedes", nationality:"United Kingdom", flag:"🇬🇧", number:"63", dob:"1998-02-15", age:28, races:148, wins:4, podiums:21, poles:5, fastestLaps:8, championships:0, bio:"梅赛德斯领军车手，以精准的排位赛表现和稳定的长距离节奏著称。2026赛季与新人Antonelli搭档，展现成熟领袖风范。" },
   { name:"Charles Leclerc", team:"Ferrari", nationality:"Monaco", flag:"🇲🇨", number:"16", dob:"1997-10-16", age:28, races:170, wins:9, podiums:44, poles:26, fastestLaps:10, championships:0, bio:"法拉利王牌，排位赛之王。单圈速度围场顶尖，但需要更稳定的正赛发挥来争夺世界冠军。2026赛季搭档Hamilton组成梦幻阵容。" },
   { name:"Lewis Hamilton", team:"Ferrari", nationality:"United Kingdom", flag:"🇬🇧", number:"44", dob:"1985-01-07", age:41, races:362, wins:105, podiums:203, poles:104, fastestLaps:67, championships:7, bio:"七届世界冠军，F1历史最伟大车手之一。2025年加盟法拉利，追逐第八座世界冠军的梦想。2026赛季适应新规后迅速展现竞争力。" },
