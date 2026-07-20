@@ -345,7 +345,7 @@ def fetch_fastf1_data():
 
         race_results.append({
             "gp": event["EventName"],
-            "circuit": event["CircuitName"],
+            "circuit": event.get("Location", ""),
             "country": f"🏁 {event['Country']}",
             "dates": _format_dates(event),
             "flag": "🏁",
