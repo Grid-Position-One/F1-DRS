@@ -292,8 +292,9 @@ def fetch_fastf1_data():
         print("[WARN] fastf1 未安装，使用静态数据兜底", file=sys.stderr)
         return None
 
+    import pathlib
+    pathlib.Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
     fastf1.Cache.enable_cache(CACHE_DIR)
-    os.makedirs(CACHE_DIR, exist_ok=True)
 
     race_results = []
     driver_stats = {}  # driver -> {wins, podiums, poles, points, fastestLaps, DNFs, races}
