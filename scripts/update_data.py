@@ -468,7 +468,29 @@ def _format_dates(event):
 # ----------------------------------------------------------------------------
 # 生成 data.js
 # ----------------------------------------------------------------------------
+def _has_data(obj):
+    """判断 standings 对象是否有有效数据（非 None / 非空 list / 非空 DataFrame）"""
+    if obj is None:
+        return False
+    if hasattr(obj, "empty"):
+        return not obj.empty
+    if isinstance(obj, (list, tuple)):
+        return len(obj) > 0
+    return True
+
+
+def _iter_rows(obj):
+    """统一迭代 DataFrame 或 list of dicts，每次 yield 一个类似 Series 的行对象"""
+    if hasattr(obj, "iterrows"):
+        for _, row in obj.iterrows():
+            yield row
+    else:
+        for row in obj:
+            yield row
+
+
 def build_data_js(f1_data):
+    """根据 FastF1 数据（或 None）生成 data.js 内容，无数据时全部用静态兜底"""
     lines = []
     lines.append("// ============================================================")
     lines.append("//  F1-DRS DATA LAYER")
@@ -506,10 +528,10 @@ def build_data_js(f1_data):
 
     # ----- constructorsData -----
     lines.append("// ----- constructorsData -----")
-    if f1_data and f1_data.get("constructor_standings") is not None:
-        cs = f1_data["constructor_standings"]
+    cs = f1_data.get("constructor_standings") if f1_data else None
+    if _has_data(cs):
         lines.append("const constructorsData = [")
-        for i, (_, row) in enumerate(cs.iterrows(), start=1):
+        for i, row in enumerate(_iter_rows(cs), start=1):
             team = row["TeamName"]
             points = float(row["Points"]) if row["Points"] == row["Points"] else 0.0
             color = TEAM_COLORS.get(team, "#888888")
@@ -525,11 +547,11 @@ def build_data_js(f1_data):
 
     # ----- driverStandings -----
     lines.append("// ----- driverStandings -----")
-    if f1_data and f1_data.get("driver_standings") is not None:
-        ds = f1_data["driver_standings"]
+    ds = f1_data.get("driver_standings") if f1_data else None
+    if _has_data(ds):
         lines.append("const driverStandings = [")
         leader_pts = None
-        for i, (_, row) in enumerate(ds.iterrows(), start=1):
+        for i, row in enumerate(_iter_rows(ds), start=1):
             name = _short_name(row["FullName"])
             team = row["TeamName"]
             pts = float(row["Points"]) if row["Points"] == row["Points"] else 0.0
