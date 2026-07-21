@@ -372,19 +372,33 @@ def fetch_fastf1_data():
             if row["Status"] not in ("Finished", "Finished", None) and "DNF" in str(row["Status"]).upper():
                 ds["DNFs"] += 1
 
-        # ---- 积分榜（取最后一站后的 standings）----
-        try:
-            ds_standings = session.get_driver_standings()
-            if ds_standings is not None:
-                driver_standings = ds_standings
-        except Exception:
-            pass
-        try:
-            cs_standings = session.get_constructor_standings()
-            if cs_standings is not None:
-                constructor_standings = cs_standings
-        except Exception:
-            pass
+    # ---- 积分榜：从已累积的 driver_stats 自行构建（fastf1 v3 无 standings API）----
+    # 建立短名 -> 全名/车队 映射（DRIVER_STATIC 的 key 是全名，driver_stats 的 key 是短名）
+    short_to_full = {_short_name(full): full for full in DRIVER_STATIC}
+    short_to_team = {_short_name(full): info["team"] for full, info in DRIVER_STATIC.items()}
+
+    driver_standings = []
+    for short_name, ds in driver_stats.items():
+        full_name = short_to_full.get(short_name, short_name)
+        team_name = short_to_team.get(short_name, "—")
+        driver_standings.append({
+            "FullName": full_name,
+            "TeamName": team_name,
+            "Points": float(ds.get("points", 0.0)),
+        })
+    driver_standings.sort(key=lambda d: d["Points"], reverse=True)
+
+    constructor_standings = []
+    team_points = {}
+    for short_name, ds in driver_stats.items():
+        team_name = short_to_team.get(short_name, "—")
+        team_points[team_name] = team_points.get(team_name, 0.0) + float(ds.get("points", 0.0))
+    for team_name, pts in team_points.items():
+        constructor_standings.append({
+            "TeamName": team_name,
+            "Points": float(pts),
+        })
+    constructor_standings.sort(key=lambda d: d["Points"], reverse=True)
 
     return {
         "race_results": race_results,
