@@ -594,7 +594,7 @@ def build_data_js(f1_data):
         lines.append(f"    id:'{tid}', name:'{info['name']}', gp:'{info['gp']}', country:'{info['country']}', firstRace:{info['firstRace']},")
         lines.append(f"    laps:{laps}, length:'{length}', dist:'{dist}', corners:{info['corners']}, drs:{info['drs']},")
         lines.append(f"    record:{{driver:'{rec_driver}', time:'{rec_time}', year:{rec_year if isinstance(rec_year, int) else chr(39)+str(rec_year)+chr(39)}}},")
-        lines.append(f"    layout:'{layout}'")
+        lines.append(f"    layout:'{layout.replace(chr(39), chr(92)+chr(39))}'")
         lines.append("  },")
     lines.append("];\n")
 
