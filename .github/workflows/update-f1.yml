@@ -16,3 +16,4 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "📊 自动更新比赛数据"
+          push_options: '--force-with-lease'
