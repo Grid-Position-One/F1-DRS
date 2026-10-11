@@ -29,8 +29,8 @@ const circuits = [
   { no:'18', gp:'墨西哥城大奖赛', circuit:'Autódromo Hermanos Rodríguez', city:'墨西哥城', date:'10月30日-11月1日', trackDetailId:20 },
   { no:'19', gp:'圣保罗大奖赛', circuit:'Autódromo José Carlos Pace', city:'圣保罗', date:'11月6-8日', trackDetailId:21 },
   { no:'20', gp:'拉斯维加斯大奖赛', circuit:'Las Vegas Strip Circuit', city:'拉斯维加斯', date:'11月19-21日', trackDetailId:22 },
-  { no:'21', gp:'卡塔尔大奖赛', circuit:'Lusail International Circuit', city:'卢赛尔', date:'11月27-29日', trackDetailId:23 },
-  { no:'22', gp:'阿布扎比大奖赛', circuit:'Yas Marina Circuit', city:'阿布扎比', date:'12月4-6日', trackDetailId:24 },
+  { no:'21', gp:'卡塔尔大奖赛（待定）', circuit:'Lusail International Circuit', city:'卢赛尔', date:'11月27-29日', trackDetailId:23 },
+  { no:'22', gp:'阿布扎比大奖赛（待定）', circuit:'Yas Marina Circuit', city:'阿布扎比', date:'12月4-6日', trackDetailId:24 },
 ];
 
 // ----- compareDrivers -----
