@@ -10,6 +10,7 @@
 <meta property="og:description" content="2026 FIA Formula One World Championship — 全新纪元">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="zh_CN">
+<link rel="icon" type="image/svg+xml" href="f1-drs-mark.svg">
 <style>
 :root {
   --bg: #0a0e14;
@@ -2434,7 +2435,11 @@ body::before{background-image:linear-gradient(rgba(255,255,255,.018) 1px,transpa
 
 
 </style>
-</head>
+<style id="f1drs-brand-assets">
+.sidebar-logo img.logo-svg{height:42px;width:auto;flex-shrink:0}
+.sidebar-logo img.logo-icon-mobile{display:none}
+@media(max-width:768px){.sidebar-logo img.logo-icon-mobile{display:block;width:40px;height:40px;object-fit:contain;flex-shrink:0}.sidebar.expanded .sidebar-logo img.logo-icon-mobile{display:none}}
+</style></head>
 <body>
 <noscript>
   <p style="color:#fff;text-align:center;padding:40px;font-size:16px;">
@@ -2449,33 +2454,8 @@ body::before{background-image:linear-gradient(rgba(255,255,255,.018) 1px,transpa
 <!-- ===== SIDEBAR ===== -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
-    <svg class="logo-svg" viewBox="0 0 170 44" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="logoTextGrad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#00e5ff"/>
-          <stop offset="100%" stop-color="#ff1744"/>
-        </linearGradient>
-      </defs>
-      <polygon points="6,24 24,28 71,28 68,22 48,22 40,17 32,17 24,24" fill="none" stroke="#00e5ff" stroke-width="1.8" stroke-linejoin="round"/>
-      <line x1="10" y1="28" x2="71" y2="28" stroke="#00e5ff" stroke-width="1.2" opacity="0.7"/>
-      <path d="M28,24 Q36,12 46,22" fill="none" stroke="#ff1744" stroke-width="2" stroke-linecap="round"/>
-      <line x1="3" y1="20" x2="10" y2="20" stroke="#00e5ff" stroke-width="1.8" stroke-linecap="round"/>
-      <line x1="4" y1="24" x2="10" y2="24" stroke="#00e5ff" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="2" y1="28" x2="10" y2="28" stroke="#00e5ff" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/>
-      <line x1="78" y1="10" x2="78" y2="22" stroke="#ff1744" stroke-width="2.5" stroke-linecap="round"/>
-      <line x1="76" y1="14" x2="76" y2="24" stroke="#00e5ff" stroke-width="2" stroke-linecap="round"/>
-      <line x1="74" y1="12" x2="78" y2="12" stroke="#00e5ff" stroke-width="1.2"/>
-      <circle cx="66" cy="31" r="8" fill="#12122a" stroke="#00e5ff" stroke-width="1.5"/>
-      <circle cx="66" cy="31" r="4" fill="none" stroke="#00e5ff" stroke-width="0.6" opacity="0.5"/>
-      <circle cx="20" cy="31" r="8" fill="#12122a" stroke="#00e5ff" stroke-width="1.5"/>
-      <circle cx="20" cy="31" r="4" fill="none" stroke="#00e5ff" stroke-width="0.6" opacity="0.5"/>
-      <line x1="82" y1="8" x2="90" y2="8" stroke="#ffea00" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
-      <line x1="82" y1="12" x2="93" y2="12" stroke="#ffea00" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
-      <line x1="82" y1="16" x2="89" y2="16" stroke="#ffea00" stroke-width="0.8" stroke-linecap="round" opacity="0.5"/>
-      <text x="100" y="19" font-family="'Segoe UI','Microsoft YaHei',sans-serif" font-size="17" font-weight="800" fill="url(#logoTextGrad)" letter-spacing="2">F1-DRS</text>
-      <text x="100" y="32" font-family="'Segoe UI','Microsoft YaHei',sans-serif" font-size="7" fill="#555" font-weight="600" letter-spacing="4">PADDOCK TOOL</text>
-    </svg>
-    <div class="logo-icon-mobile">DRS</div>
+    <img class="logo-svg" src="f1-drs-logo.svg" alt="F1-DRS">
+    <img class="logo-icon-mobile" src="f1-drs-mark.svg" alt="F1-DRS">
     <button class="sidebar-toggle" aria-label="展开/收起导航菜单" aria-expanded="false" aria-controls="sidebar" onclick="toggleSidebar()">☰</button>
   </div>
   <nav class="sidebar-nav" role="navigation" aria-label="主导航">
