@@ -1,19 +1,31 @@
-name: 更新 F1 数据
+name: 更新 F1 比赛数据
+
 on:
   schedule:
-    - cron: '0 2 * * 1'
+    # 周一 06:00 UTC（北京时间 14:00），让周末正赛结果有时间发布
+    - cron: '0 6 * * 1'
   workflow_dispatch:
+
+concurrency:
+  group: update-f1-data
+  cancel-in-progress: false
+
 jobs:
   update:
+    name: 更新赛果与积分榜
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - run: pip install fastf1
-      - run: python scripts/update_data.py
-      - uses: stefanzweifel/git-auto-commit-action@v5
+      - name: 安装 FastF1
+        run: python -m pip install --upgrade pip fastf1
+      - name: 抓取比赛数据并生成 docs/data.js
+        run: python scripts/update_data.py
+      - name: 提交数据变更
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          commit_message: "📊 自动更新比赛数据"
-          push_options: '--force-with-lease'
+          commit_message: "📊 自动更新比赛结果与积分榜"
